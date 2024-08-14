@@ -8,6 +8,7 @@ const OrderSchema = new mongoose.Schema({
     custphone:{type: Number},
     order_item :{type: String},
     item_price :{type:Number},
+    order_select:{type:Boolean, default: false},
     timestamp: { type: Date, default: Date.now }
     //order_notes: {type: String},
     //date: { type: Date },
