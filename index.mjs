@@ -6,6 +6,8 @@ import bodyParser from "express";
 import cors from "cors"
 import MenuItemsModel from "./models/menuitems.mjs"
 import ReserveSchema from "./models/reservations.mjs"
+import CustomerSchema from "./models/custdetails.mjs"
+import OrderSchema from "./models/orderdetails.mjs"
 
 const PORT = process.env.PORT || 5051;
 //Connection to database through mongoose
@@ -51,7 +53,6 @@ app.get("/getmenu", async(req,res)=>{
 app.post("/submitre",async(req,res)=>{
 console.log(req.body);
 console.log(req.body.firstntext);
-console.log(req.body.lastntext);
 if (req.body) {
   try{
   const { firstntext, lastntext, datetext,timetext,emailtext,phnotext } = req.body;
@@ -78,6 +79,71 @@ if (req.body) {
   
 } else res.status(400);
 });
+//Submit Customer details from Order form
+app.post("/submit_cust",async(req,res)=>{
+  console.log(req.body);
+  const {firstPayload,secondPayload,idPayload} = req.body;
+    console.log(firstPayload);
+    console.log(secondPayload);
+    console.log(idPayload);
+    console.log(firstPayload.firstnCust);
+    console.log(secondPayload.length);
+  if (req.body) {
+    try{
+    //const { firstnCust, lastnCust, emailCust,phnoCust } = req.body;
+    const newuser= new CustomerSchema({
+      firstname_cust: firstPayload.firstnCust, 
+      lastname_cust: firstPayload.lastnCust, 
+      email_cust: firstPayload.emailCust,
+      phoneno_cust: firstPayload.phnoCust,
+      cust_id: idPayload
+    });
+    await newuser.save();
+    for(let i=0;i<secondPayload.length;i++){
+    const neworder= new OrderSchema({
+      cust_id: idPayload,
+      custname: firstPayload.firstnCust, 
+      custphone: firstPayload.phnoCust,
+      order_item: secondPayload[i].name,
+      item_price: secondPayload[i].price
+    })
+    await neworder.save();
+    }
+    res.json({ message: 'Data saved successfully' });
+    //console.log(res.json());
+    }catch(error){
+      console.log(error);
+    }
+    
+  } else res.status(400);
+  });
+// Submit Order Details of the particular customer
+app.post("/submit_order/:custid",async(req,res)=>{
+  console.log(req.params);
+  console.log(req.body);
+  //req.params
+  /*if (req.body) {
+    try{
+    const { firstntext, lastntext, datetext,timetext,emailtext,phnotext } = req.body;
+    const newuser= new OrderSchema({
+      firstname:firstntext, 
+      lastname:lastntext, 
+      date:datetext,
+      time:timetext,
+      email:emailtext,
+      phoneno:phnotext
+    }
+    );
+    console.log(newuser);
+    
+    await newuser.save();
+    res.json({ message: 'Data saved successfully' });
+    }catch(error){
+      console.log(error);
+    }
+    
+  } else res.status(400);*/
+  });
 // Global error handling
 app.use((err, _req, res, next) => {
     res.status(500).send("Seems like we messed up somewhere...");

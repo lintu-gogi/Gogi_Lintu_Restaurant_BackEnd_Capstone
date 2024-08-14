@@ -6,7 +6,8 @@ const CustomerSchema = new mongoose.Schema({
     firstname_cust: { type: String},
     lastname_cust: { type: String},
     email_cust: { type: String },
-    phoneno_cust: { type: Number }
+    phoneno_cust: { type: Number },
+    cust_id : {type: String}
     
 });
 
