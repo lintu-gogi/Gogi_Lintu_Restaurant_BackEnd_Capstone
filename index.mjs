@@ -117,33 +117,27 @@ app.post("/submit_cust",async(req,res)=>{
     
   } else res.status(400);
   });
-// Submit Order Details of the particular customer
-app.post("/submit_order/:custid",async(req,res)=>{
-  console.log(req.params);
-  console.log(req.body);
-  //req.params
-  /*if (req.body) {
-    try{
-    const { firstntext, lastntext, datetext,timetext,emailtext,phnotext } = req.body;
-    const newuser= new OrderSchema({
-      firstname:firstntext, 
-      lastname:lastntext, 
-      date:datetext,
-      time:timetext,
-      email:emailtext,
-      phoneno:phnotext
-    }
-    );
-    console.log(newuser);
-    
-    await newuser.save();
-    res.json({ message: 'Data saved successfully' });
-    }catch(error){
-      console.log(error);
-    }
-    
-  } else res.status(400);*/
-  });
+
+// Route to get all order items
+app.get('/orderitems', async (req, res) => {
+  try {
+    const items = await OrderSchema.find();
+    res.json(items);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching items' });
+  }
+});
+// Route to delete selected items
+app.delete('/deleteorders', async (req, res) => {
+  try {
+    const ids = req.body.ids;
+    console.log("Id's to delete "+ids);
+    await OrderSchema.deleteMany({ _id: { $in: ids } });
+    res.json({ message: 'Orders deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting items' });
+  }
+});
 // Global error handling
 app.use((err, _req, res, next) => {
     res.status(500).send("Seems like we messed up somewhere...");
